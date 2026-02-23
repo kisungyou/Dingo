@@ -1,0 +1,41 @@
+site_name: Dingo
+site_description: Plain, practical documentation for the Dingo C++ numerical library.
+site_url: https://kisungyou.github.io/Dingo/
+repo_url: https://github.com/kisungyou/Dingo
+repo_name: kisungyou/Dingo
+edit_uri: edit/master/docs/
+use_directory_urls: true
+strict: true
+
+theme:
+  name: readthedocs
+
+plugins:
+  - search
+
+markdown_extensions:
+  - tables
+  - admonition
+  - toc:
+      permalink: true
+
+extra_css:
+  - styles/extra.css
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Core Types: core-types.md
+  - Basic Operations: basic-operations.md
+  - Linear Algebra: linear-algebra.md
+  - Eigen Interop: eigen-interop.md
+  - API Reference:
+      - Overview: api-reference/index.md
+      - Matrix and Vectors: api-reference/matrix-and-vectors.md
+      - Functions: api-reference/functions.md
+      - Linear Algebra API: api-reference/linalg.md
+      - Cube and Cell API: api-reference/cube-and-cell.md
+      - Interop API: api-reference/interop.md
+  - FAQ: faq.md
+  - Limitations: limitations.md
+  - Contributing Docs: contributing-docs.md

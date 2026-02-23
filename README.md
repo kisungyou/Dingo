@@ -2,6 +2,8 @@
 
 Dingo is a header-only C++ numerical library with an Armadillo-style API in the `dingo::` namespace, backed by Eigen.
 
+[![Docs](https://img.shields.io/badge/docs-github%20pages-blue)](https://kisungyou.github.io/Dingo/)
+
 ## Highlights
 
 - Dense containers: `Mat`, `Col`, `Row`

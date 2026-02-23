@@ -1,0 +1,15 @@
+code {
+  font-size: 0.95em;
+}
+
+pre code {
+  line-height: 1.45;
+}
+
+table {
+  width: 100%;
+}
+
+blockquote {
+  color: #333;
+}
