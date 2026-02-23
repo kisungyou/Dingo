@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wl,-search_paths_first -Wl,-headerpad_max_install_names "CMakeFiles/dingo-tests.dir/test_core.cpp.o" "CMakeFiles/dingo-tests.dir/test_linalg.cpp.o" -o dingo-tests  /opt/homebrew/opt/catch2/lib/libCatch2Main.a /opt/homebrew/opt/catch2/lib/libCatch2.a

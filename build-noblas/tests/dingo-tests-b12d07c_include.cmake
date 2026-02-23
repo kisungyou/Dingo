@@ -1,5 +1,0 @@
-if(EXISTS "/Users/kisung/Desktop/Dingo/build-noblas/tests/dingo-tests-b12d07c_tests.cmake")
-  include("/Users/kisung/Desktop/Dingo/build-noblas/tests/dingo-tests-b12d07c_tests.cmake")
-else()
-  add_test(dingo-tests_NOT_BUILT-b12d07c dingo-tests_NOT_BUILT-b12d07c)
-endif()

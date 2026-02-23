@@ -1,3 +1,12 @@
 build/
+.cmake/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+build-*/
+_install/
+.cache/
+.idea/
+.vscode/
 .DS_Store
-
