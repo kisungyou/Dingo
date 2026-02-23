@@ -1,0 +1,7 @@
+eig_sym and svd 1 0.0194011
+chol and lu 1 0.0187892
+solve and inverse 1 0.0185445
+Cube and Field indexing 1 0.0188178
+Mat basics and arithmetic 1 0.0187748
+Factory and transform helpers 1 0.0185207
+---

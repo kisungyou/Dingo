@@ -1,0 +1,48 @@
+Dingo Installation (short guide)
+================================
+
+Dingo is header-only. You can use either:
+
+1) Vendor the directory (quickest)
+----------------------------------
+
+- Copy the whole `Dingo` folder into your project (or as a git submodule).
+- In your project build system, add one include path:
+  - `<path-to-Dingo>/include/dingo`
+- Include in code:
+  - `#include <dingo>`
+
+
+2) Install system-wide (or to a prefix) with CMake
+---------------------------------------------------
+
+Configure and install:
+
+```bash
+/Applications/CMake.app/Contents/bin/cmake -S . -B build \
+  -DDINGO_USE_SYSTEM_EIGEN=OFF \
+  -DDINGO_ENABLE_EIGEN_BLAS=ON \
+  -DDINGO_ENABLE_EIGEN_LAPACK=ON
+
+/Applications/CMake.app/Contents/bin/cmake --build build -- -j8
+/Applications/CMake.app/Contents/bin/cmake --install build --prefix /usr/local
+```
+
+After this, users do not need CMake in their own project.
+Example (plain compiler use):
+
+```bash
+c++ -std=c++17 your_code.cpp -o your_app
+```
+
+(`your_code.cpp` uses `#include <dingo>`)
+
+
+Notes
+-----
+
+- Default safe behavior keeps Eigen BLAS/LAPACKE backend macros OFF unless explicitly enabled.
+- License files and third-party notices are installed under:
+  - `share/dingo/`
+  - `share/dingo/licenses/`
+  - `share/dingo/third_party/eigen/licenses/`

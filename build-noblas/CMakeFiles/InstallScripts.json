@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/kisung/Desktop/Dingo/build-noblas/cmake_install.cmake",
+		"/Users/kisung/Desktop/Dingo/build-noblas/tests/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

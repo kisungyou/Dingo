@@ -1,0 +1,123 @@
+Start testing: Feb 21 22:21 EST
+----------------------------------------------------------
+1/6 Testing: eig_sym and svd
+1/6 Test: eig_sym and svd
+Command: "/Users/kisung/Desktop/Dingo/build-noblas/tests/dingo-tests" "eig_sym and svd"
+Directory: /Users/kisung/Desktop/Dingo/build-noblas/tests
+"eig_sym and svd" start time: Feb 21 22:21 EST
+Output:
+----------------------------------------------------------
+Filters: "eig_sym and svd"
+Randomness seeded to: 3225635050
+===============================================================================
+All tests passed (8 assertions in 1 test case)
+
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"eig_sym and svd" end time: Feb 21 22:21 EST
+"eig_sym and svd" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/6 Testing: chol and lu
+2/6 Test: chol and lu
+Command: "/Users/kisung/Desktop/Dingo/build-noblas/tests/dingo-tests" "chol and lu"
+Directory: /Users/kisung/Desktop/Dingo/build-noblas/tests
+"chol and lu" start time: Feb 21 22:21 EST
+Output:
+----------------------------------------------------------
+Filters: "chol and lu"
+Randomness seeded to: 690357144
+===============================================================================
+All tests passed (5 assertions in 1 test case)
+
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"chol and lu" end time: Feb 21 22:21 EST
+"chol and lu" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/6 Testing: solve and inverse
+3/6 Test: solve and inverse
+Command: "/Users/kisung/Desktop/Dingo/build-noblas/tests/dingo-tests" "solve and inverse"
+Directory: /Users/kisung/Desktop/Dingo/build-noblas/tests
+"solve and inverse" start time: Feb 21 22:21 EST
+Output:
+----------------------------------------------------------
+Filters: "solve and inverse"
+Randomness seeded to: 1827537601
+===============================================================================
+All tests passed (6 assertions in 1 test case)
+
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"solve and inverse" end time: Feb 21 22:21 EST
+"solve and inverse" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/6 Testing: Cube and Field indexing
+4/6 Test: Cube and Field indexing
+Command: "/Users/kisung/Desktop/Dingo/build-noblas/tests/dingo-tests" "Cube and Field indexing"
+Directory: /Users/kisung/Desktop/Dingo/build-noblas/tests
+"Cube and Field indexing" start time: Feb 21 22:21 EST
+Output:
+----------------------------------------------------------
+Filters: "Cube and Field indexing"
+Randomness seeded to: 2365396549
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"Cube and Field indexing" end time: Feb 21 22:21 EST
+"Cube and Field indexing" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/6 Testing: Mat basics and arithmetic
+5/6 Test: Mat basics and arithmetic
+Command: "/Users/kisung/Desktop/Dingo/build-noblas/tests/dingo-tests" "Mat basics and arithmetic"
+Directory: /Users/kisung/Desktop/Dingo/build-noblas/tests
+"Mat basics and arithmetic" start time: Feb 21 22:21 EST
+Output:
+----------------------------------------------------------
+Filters: "Mat basics and arithmetic"
+Randomness seeded to: 3921565112
+===============================================================================
+All tests passed (4 assertions in 1 test case)
+
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"Mat basics and arithmetic" end time: Feb 21 22:21 EST
+"Mat basics and arithmetic" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/6 Testing: Factory and transform helpers
+6/6 Test: Factory and transform helpers
+Command: "/Users/kisung/Desktop/Dingo/build-noblas/tests/dingo-tests" "Factory and transform helpers"
+Directory: /Users/kisung/Desktop/Dingo/build-noblas/tests
+"Factory and transform helpers" start time: Feb 21 22:21 EST
+Output:
+----------------------------------------------------------
+Filters: "Factory and transform helpers"
+Randomness seeded to: 1483551722
+===============================================================================
+All tests passed (13 assertions in 1 test case)
+
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"Factory and transform helpers" end time: Feb 21 22:21 EST
+"Factory and transform helpers" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Feb 21 22:21 EST
