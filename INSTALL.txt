@@ -37,6 +37,33 @@ c++ -std=c++17 your_code.cpp -o your_app
 
 (`your_code.cpp` uses `#include <dingo>`)
 
+3) Install from GitHub Releases (self-hosted packages)
+-------------------------------------------------------
+
+For tagged releases (`vX.Y.Z`), Dingo publishes native package assets:
+
+- Linux: `.deb`, `.rpm`, `.tar.gz`
+- macOS: `.pkg`, `.tar.gz`
+- Windows: `.msi`, `.zip`
+
+Quick installer scripts:
+
+- Linux/macOS:
+  - `curl -fsSL https://raw.githubusercontent.com/kisungyou/Dingo/master/scripts/install.sh | bash`
+- Windows (PowerShell):
+  - `iwr https://raw.githubusercontent.com/kisungyou/Dingo/master/scripts/install.ps1 -UseBasicParsing | iex`
+
+Manual install examples (from downloaded release assets):
+
+- Debian/Ubuntu:
+  - `sudo apt install ./dingo_<version>_<arch>.deb`
+- RPM distros:
+  - `sudo dnf install ./dingo-<version>-1.<arch>.rpm`
+- macOS:
+  - `sudo installer -pkg ./dingo-<version>-macos-<arch>.pkg -target /`
+- Windows:
+  - `msiexec /i dingo-<version>-windows-<arch>.msi /qn`
+
 
 Notes
 -----

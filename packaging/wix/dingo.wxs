@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CPackWiXPatch>
+  <CPackWiXFragment Id="#PRODUCT">
+    <Property Id="ARPNOMODIFY" Value="1" />
+    <Property Id="ARPNOREPAIR" Value="1" />
+  </CPackWiXFragment>
+</CPackWiXPatch>

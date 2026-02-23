@@ -1,0 +1,327 @@
+name: Release Packages
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package-linux:
+    name: Linux (${{ matrix.arch }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install packaging dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm
+
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DDINGO_PACKAGE=ON \
+            -DDINGO_PACKAGE_WITH_BUNDLED_EIGEN=ON \
+            -DDINGO_BUILD_TESTS=OFF \
+            -DDINGO_BUILD_BENCHMARKS=OFF
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Package
+        run: |
+          cd build
+          cpack -G DEB
+          cpack -G RPM
+          cpack -G TGZ
+
+      - name: Verify package install and consumer build
+        run: |
+          set -euo pipefail
+          DEB_FILE="$(find build -maxdepth 1 -name '*.deb' | head -n1)"
+          TGZ_FILE="$(find build -maxdepth 1 -name '*.tar.gz' | head -n1)"
+          if [[ -n "${DEB_FILE}" ]]; then
+            sudo apt-get install -y "${DEB_FILE}"
+          fi
+
+          mkdir -p /tmp/dingo-consumer-linux
+          cat >/tmp/dingo-consumer-linux/CMakeLists.txt <<'CMAKE'
+          cmake_minimum_required(VERSION 3.20)
+          project(DingoConsumer LANGUAGES CXX)
+          find_package(Dingo CONFIG REQUIRED)
+          add_executable(consumer main.cpp)
+          target_link_libraries(consumer PRIVATE dingo::dingo)
+          CMAKE
+
+          cat >/tmp/dingo-consumer-linux/main.cpp <<'CPP'
+          #include <dingo>
+          #include <iostream>
+
+          int main() {
+            dingo::mat A{{1.0, 2.0}, {3.0, 4.0}};
+            dingo::vec b{5.0, 6.0};
+            auto x = dingo::solve(A, b);
+            std::cout << x(0) << "," << x(1) << "\n";
+            return 0;
+          }
+          CPP
+
+          cmake -S /tmp/dingo-consumer-linux -B /tmp/dingo-consumer-linux/build
+          cmake --build /tmp/dingo-consumer-linux/build
+          /tmp/dingo-consumer-linux/build/consumer
+
+          test -f /usr/share/dingo/LICENSE
+          test -f /usr/share/dingo/THIRD_PARTY_NOTICES.md
+
+          mkdir -p /tmp/dingo-prefix-linux
+          tar -xzf "${TGZ_FILE}" -C /tmp/dingo-prefix-linux
+          TGZ_CONFIG="$(find /tmp/dingo-prefix-linux -name DingoConfig.cmake | head -n1)"
+          TGZ_PREFIX="$(dirname "$(dirname "$(dirname "${TGZ_CONFIG}")")")"
+          cmake -S /tmp/dingo-consumer-linux -B /tmp/dingo-consumer-linux/build-tgz \
+            -DCMAKE_PREFIX_PATH="${TGZ_PREFIX}"
+          cmake --build /tmp/dingo-consumer-linux/build-tgz
+          /tmp/dingo-consumer-linux/build-tgz/consumer
+
+      - name: Uninstall DEB (best effort)
+        run: |
+          PKG="$(dpkg-deb --field build/*.deb Package 2>/dev/null | head -n1 || true)"
+          if [[ -n "${PKG}" ]]; then
+            sudo apt-get remove -y "${PKG}" || true
+          fi
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dingo-linux-${{ matrix.arch }}
+          path: |
+            build/*.deb
+            build/*.rpm
+            build/*.tar.gz
+
+  package-macos:
+    name: macOS (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-13
+            arch: x86_64
+          - runner: macos-latest
+            arch: arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DDINGO_PACKAGE=ON \
+            -DDINGO_PACKAGE_WITH_BUNDLED_EIGEN=ON \
+            -DDINGO_BUILD_TESTS=OFF \
+            -DDINGO_BUILD_BENCHMARKS=OFF
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Package
+        run: |
+          cd build
+          cpack -G productbuild
+          cpack -G TGZ
+
+      - name: Verify install and consumer build
+        run: |
+          set -euo pipefail
+          PKG_FILE="$(find build -maxdepth 1 -name '*.pkg' | head -n1)"
+          TGZ_FILE="$(find build -maxdepth 1 -name '*.tar.gz' | head -n1)"
+          sudo installer -pkg "${PKG_FILE}" -target /
+
+          mkdir -p /tmp/dingo-consumer-macos
+          cat >/tmp/dingo-consumer-macos/CMakeLists.txt <<'CMAKE'
+          cmake_minimum_required(VERSION 3.20)
+          project(DingoConsumer LANGUAGES CXX)
+          find_package(Dingo CONFIG REQUIRED)
+          add_executable(consumer main.cpp)
+          target_link_libraries(consumer PRIVATE dingo::dingo)
+          CMAKE
+
+          cat >/tmp/dingo-consumer-macos/main.cpp <<'CPP'
+          #include <dingo>
+          #include <iostream>
+
+          int main() {
+            dingo::mat A{{1.0, 2.0}, {3.0, 4.0}};
+            dingo::vec b{5.0, 6.0};
+            auto x = dingo::solve(A, b);
+            std::cout << x(0) << "," << x(1) << "\n";
+            return 0;
+          }
+          CPP
+
+          cmake -S /tmp/dingo-consumer-macos -B /tmp/dingo-consumer-macos/build
+          cmake --build /tmp/dingo-consumer-macos/build
+          /tmp/dingo-consumer-macos/build/consumer
+
+          test -f /usr/local/share/dingo/LICENSE
+
+          mkdir -p /tmp/dingo-prefix-macos
+          tar -xzf "${TGZ_FILE}" -C /tmp/dingo-prefix-macos
+          TGZ_CONFIG="$(find /tmp/dingo-prefix-macos -name DingoConfig.cmake | head -n1)"
+          TGZ_PREFIX="$(dirname "$(dirname "$(dirname "${TGZ_CONFIG}")")")"
+          cmake -S /tmp/dingo-consumer-macos -B /tmp/dingo-consumer-macos/build-tgz \
+            -DCMAKE_PREFIX_PATH="${TGZ_PREFIX}"
+          cmake --build /tmp/dingo-consumer-macos/build-tgz
+          /tmp/dingo-consumer-macos/build-tgz/consumer
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dingo-macos-${{ matrix.arch }}
+          path: |
+            build/*.pkg
+            build/*.tar.gz
+
+  package-windows:
+    name: Windows (${{ matrix.arch }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        shell: pwsh
+        run: |
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 `
+            -DDINGO_PACKAGE=ON `
+            -DDINGO_PACKAGE_WITH_BUNDLED_EIGEN=ON `
+            -DDINGO_BUILD_TESTS=OFF `
+            -DDINGO_BUILD_BENCHMARKS=OFF
+
+      - name: Build
+        shell: pwsh
+        run: cmake --build build --config Release
+
+      - name: Package
+        shell: pwsh
+        run: |
+          Set-Location build
+          cpack -G WIX -C Release
+          cpack -G ZIP -C Release
+
+      - name: Verify install and consumer build
+        shell: pwsh
+        run: |
+          $msi = Get-ChildItem build -Filter *.msi | Select-Object -First 1
+          $zip = Get-ChildItem build -Filter *.zip | Select-Object -First 1
+          Start-Process msiexec.exe -ArgumentList "/i `"$($msi.FullName)`" /qn /norestart" -Wait -NoNewWindow
+
+          New-Item -ItemType Directory -Path "$env:TEMP\dingo-consumer-win" -Force | Out-Null
+          @"
+          cmake_minimum_required(VERSION 3.20)
+          project(DingoConsumer LANGUAGES CXX)
+          find_package(Dingo CONFIG REQUIRED)
+          add_executable(consumer main.cpp)
+          target_link_libraries(consumer PRIVATE dingo::dingo)
+          "@ | Set-Content "$env:TEMP\dingo-consumer-win\CMakeLists.txt"
+
+          @"
+          #include <dingo>
+          #include <iostream>
+          int main() {
+            dingo::mat A{{1.0, 2.0}, {3.0, 4.0}};
+            dingo::vec b{5.0, 6.0};
+            auto x = dingo::solve(A, b);
+            std::cout << x(0) << "," << x(1) << "\n";
+            return 0;
+          }
+          "@ | Set-Content "$env:TEMP\dingo-consumer-win\main.cpp"
+
+          cmake -S "$env:TEMP\dingo-consumer-win" -B "$env:TEMP\dingo-consumer-win\build" `
+            -DCMAKE_PREFIX_PATH="C:/Program Files/Dingo"
+          cmake --build "$env:TEMP\dingo-consumer-win\build" --config Release
+          & "$env:TEMP\dingo-consumer-win\build\Release\consumer.exe"
+
+          $zipPrefix = "$env:TEMP\dingo-prefix-win"
+          New-Item -ItemType Directory -Path $zipPrefix -Force | Out-Null
+          Expand-Archive -Path $zip.FullName -DestinationPath $zipPrefix -Force
+          $zipConfig = Get-ChildItem $zipPrefix -Recurse -Filter DingoConfig.cmake | Select-Object -First 1
+          $zipCmakeDir = Split-Path $zipConfig.FullName -Parent
+          $zipLibDir = Split-Path $zipCmakeDir -Parent
+          $zipRoot = Split-Path $zipLibDir -Parent
+          cmake -S "$env:TEMP\dingo-consumer-win" -B "$env:TEMP\dingo-consumer-win\build-zip" `
+            -DCMAKE_PREFIX_PATH="$zipRoot"
+          cmake --build "$env:TEMP\dingo-consumer-win\build-zip" --config Release
+          & "$env:TEMP\dingo-consumer-win\build-zip\Release\consumer.exe"
+
+      - name: Uninstall MSI (best effort)
+        shell: pwsh
+        run: |
+          $msi = Get-ChildItem build -Filter *.msi | Select-Object -First 1
+          Start-Process msiexec.exe -ArgumentList "/x `"$($msi.FullName)`" /qn /norestart" -Wait -NoNewWindow
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dingo-windows-${{ matrix.arch }}
+          path: |
+            build/*.msi
+            build/*.zip
+
+  publish-release:
+    name: Publish release assets
+    runs-on: ubuntu-latest
+    needs: [package-linux, package-macos, package-windows]
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      - name: Create checksums
+        run: |
+          set -euo pipefail
+          find release-assets -type f \( -name '*.deb' -o -name '*.rpm' -o -name '*.tar.gz' -o -name '*.pkg' -o -name '*.msi' -o -name '*.zip' \) -print0 | sort -z | xargs -0 sha256sum > release-assets/SHA256SUMS
+
+      - name: Optional detached signature for checksums
+        if: ${{ secrets.GPG_PRIVATE_KEY != '' }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
+            --armor --detach-sign \
+            -o release-assets/SHA256SUMS.asc \
+            release-assets/SHA256SUMS
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-assets/**/*.deb
+            release-assets/**/*.rpm
+            release-assets/**/*.tar.gz
+            release-assets/**/*.pkg
+            release-assets/**/*.msi
+            release-assets/**/*.zip
+            release-assets/SHA256SUMS
+            release-assets/SHA256SUMS.asc
+          generate_release_notes: true

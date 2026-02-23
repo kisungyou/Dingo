@@ -11,12 +11,17 @@ option(DINGO_FETCH_TEST_DEPS "Allow tests to fetch dependencies (e.g., Catch2) f
 option(DINGO_USE_EIGEN_BLAS_BACKEND "Define EIGEN_USE_BLAS for Dingo consumers (experimental)." OFF)
 option(DINGO_USE_EIGEN_LAPACKE_BACKEND "Define EIGEN_USE_LAPACKE for Dingo consumers (requires LAPACKE headers/lib)." OFF)
 option(DINGO_EIGEN_MPL2_ONLY "Define EIGEN_MPL2_ONLY to reject any non-MPL2 Eigen components at compile time." ON)
+option(DINGO_PACKAGE "Enable CPack packaging targets." OFF)
+option(DINGO_PACKAGE_WITH_BUNDLED_EIGEN "Install vendored Eigen headers as part of package payload." ON)
 
 if(DINGO_ENABLE_EIGEN_LAPACK AND NOT DINGO_ENABLE_EIGEN_BLAS)
   message(FATAL_ERROR "DINGO_ENABLE_EIGEN_LAPACK requires DINGO_ENABLE_EIGEN_BLAS=ON.")
 endif()
 if(DINGO_USE_EIGEN_LAPACKE_BACKEND AND NOT DINGO_ENABLE_EIGEN_LAPACK)
   message(FATAL_ERROR "DINGO_USE_EIGEN_LAPACKE_BACKEND requires DINGO_ENABLE_EIGEN_LAPACK=ON.")
+endif()
+if(DINGO_PACKAGE_WITH_BUNDLED_EIGEN AND DINGO_USE_SYSTEM_EIGEN)
+  message(FATAL_ERROR "DINGO_PACKAGE_WITH_BUNDLED_EIGEN=ON requires DINGO_USE_SYSTEM_EIGEN=OFF.")
 endif()
 
 add_library(dingo INTERFACE)
@@ -119,7 +124,9 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/LICENSES/" DESTINATION "share/din
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/dingo_install_header" DESTINATION "include" RENAME "dingo")
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/dingo/" DESTINATION "include/dingo_lib")
-if(NOT DINGO_USE_SYSTEM_EIGEN AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/Eigen")
+if(NOT DINGO_USE_SYSTEM_EIGEN
+   AND DINGO_PACKAGE_WITH_BUNDLED_EIGEN
+   AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/Eigen")
   install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/Eigen" DESTINATION "include")
   if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/licenses")
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen/licenses/" DESTINATION "share/dingo/third_party/eigen/licenses")
@@ -133,4 +140,8 @@ endif()
 
 if(DINGO_BUILD_BENCHMARKS)
   add_subdirectory(benchmarks)
+endif()
+
+if(DINGO_PACKAGE)
+  include(cmake/CPackConfig.cmake)
 endif()

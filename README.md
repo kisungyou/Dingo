@@ -40,6 +40,39 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
+## Easy Installation (GitHub Releases)
+
+Dingo publishes self-hosted installers/assets for tagged releases:
+
+- Linux: `.deb`, `.rpm`, `.tar.gz`
+- macOS: `.pkg`, `.tar.gz`
+- Windows: `.msi`, `.zip`
+
+Install helpers:
+
+- Linux/macOS:
+  - `curl -fsSL https://raw.githubusercontent.com/kisungyou/Dingo/master/scripts/install.sh | bash`
+- Windows PowerShell:
+  - `iwr https://raw.githubusercontent.com/kisungyou/Dingo/master/scripts/install.ps1 -UseBasicParsing | iex`
+
+Manual install examples:
+
+```bash
+# Debian/Ubuntu
+sudo apt install ./dingo_<version>_<arch>.deb
+
+# RPM distros
+sudo dnf install ./dingo-<version>-1.<arch>.rpm
+
+# macOS
+sudo installer -pkg ./dingo-<version>-macos-<arch>.pkg -target /
+```
+
+```powershell
+# Windows
+msiexec /i dingo-<version>-windows-<arch>.msi /qn
+```
+
 ## Scope (Current)
 
 Implemented as an initial scaffold. Not yet included:
