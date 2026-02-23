@@ -27,10 +27,8 @@ target_compile_features(dingo INTERFACE cxx_std_17)
 target_include_directories(
   dingo
   INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/dingo>
-    $<INSTALL_INTERFACE:include>
-    $<INSTALL_INTERFACE:include/dingo_lib>)
+    $<INSTALL_INTERFACE:include>)
 
 if(DINGO_USE_SYSTEM_EIGEN)
   find_package(Eigen3 3.4 REQUIRED NO_MODULE)

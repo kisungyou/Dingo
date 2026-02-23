@@ -12,8 +12,24 @@ Dingo is a header-only C++ numerical library with an Armadillo-style API in the 
 
 ## Quick Start
 
+Basic usage now only needs one include:
+
 ```cpp
 #include <dingo>
+```
+
+```cpp
+#include <dingo>
+#include <iostream>
+
+int main() {
+  dingo::mat A{{1.0, 2.0}, {3.0, 4.0}};
+  dingo::vec b{5.0, 6.0};
+  dingo::vec x = dingo::solve(A, b);
+
+  std::cout << x(0) << ", " << x(1) << '\n';
+  return 0;
+}
 ```
 
 ```bash
